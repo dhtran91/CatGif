@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>FunnyAnimalGIF</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+        crossorigin="anonymous">
+    <link rel="stylesheet" href="assets/css/style.css"> 
+</head>
+
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <h1>Funny Animal GIFS</h1>
+                    <hr>
+                </div>
+
+            </div>
+            <div class="row">
+
+                <div class="col-md-12 text-center">
+                    <form>
+                        <input type="text" id="animal-input" placeholder="Search a funny animal">
+                        <input type="submit" id="search-animal" value="Search">
+                        </button>
+
+                    </form>
+                    <br>
+                </div>
+
+
+            </div>
+            <div class="row">
+                <div class="col-md-12 text-center" id="animal-btn">
+
+                </div>
+                <div class="col-md-12 text-center">
+                    <button class="btn" id="additional-gif">Give me more Gifs!</button>
+                </div>
+            </div>
+            <div class="row" id="gif-view">
+
+            </div>
+
+        </div>
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+            crossorigin="anonymous"></script>
+        <script>
+            let topics = ["Dog", "Cat", "Bird", "Panda", "Monkey"];
+            let $buttonArea = $('#animal-btn');
+            let $gifView = $('#gif-view');
+            let limit = 10;
+            let offset = 0;
+            let animal;
+            let additionalGif = false;
+            function populateButton() {
+
+                $buttonArea.empty();
+                for (let i = 0; i < topics.length; i++) {
+                    let newButton = $(`<button class='animal btn' data-name='${topics[i]}'> ${topics[i]} </button>`)
+
+                    $buttonArea.append(newButton);
+                }
+                $buttonArea.append($('<hr>'))
+            }
+
+            function queryGif() {
+                if (!additionalGif) {
+                    $gifView.empty();
+                    offset = 0;
+                    animal = $(this).attr("data-name");
+                }
+                additionalGif = false;
+
+                let queryURL = "http://api.giphy.com/v1/gifs/search?api_key=2vO0utIiJekaNYg9mRz0BBJiEnYdZmXJ&offset=" + offset + "&limit=" + limit + "&q=funny-" + animal;
+                $.ajax({
+                    url: queryURL,
+                    method: "Get"
+                })
+                    .then(function (response) {
+                        console.log(response)
+                        for (let i = 0; i < limit; i++) {
+
+                            let animalImage = $('<img>').attr({
+                                "src": response.data[i].images.fixed_height_still.url,
+                                "data-still": response.data[i].images.fixed_height_still.url,
+                                "data-animate": response.data[i].images.fixed_height.url,
+                                "data-state": "still",
+                                "class": "gif"
+                            });
+                            let p = $('<p>').html("Title: " + response.data[i].title + "<br>Rating: " + response.data[i].rating);
+                            // let a = $(`<a href=${response.data[i].images.original.mp4} download>Click Here to Download</a>`)
+                            let animalDiv = $('<div>').addClass('col-md-3 col-sm-4 col-xs-12').css({ 'width': response.data[i].images.fixed_height.width, 'margin': '10px' }).append(animalImage, p);
+
+                            $gifView.append(animalDiv);
+
+                        }
+                    })
+            }
+
+            populateButton();
+
+            $(document).on('click', '#search-animal', function (event) {
+                event.preventDefault();
+
+                if ($('#animal-input').val()) {
+                    let animal = $('#animal-input').val().trim();
+                    topics.push(animal);
+                } else {
+                    return;
+                }
+
+                populateButton();
+            })
+
+            $(document).on('click', '.animal', queryGif);
+            $(document).on('click', '#additional-gif', function () {
+                offset += 10;
+                additionalGif = true;
+                queryGif();
+            });
+
+            $(document).on('click', '.gif', function () {
+                let state = $(this).attr('data-state');
+                if (state === 'still') {
+                    $(this).attr('src', $(this).attr('data-animate'));
+                    $(this).attr('data-state', 'animate');
+
+                } else {
+                    $(this).attr('src', $(this).attr('data-still'));
+                    $(this).attr('data-state', 'still');
+                }
+            });
+        </script>
+    </body>
+
+</html>

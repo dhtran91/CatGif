@@ -1,0 +1,21 @@
+body, .btn {
+    background: #0b0c10;
+    
+}
+
+h1 {
+    color: #66fcf1;
+}
+
+p, .btn {
+    color: #c5c6c7;
+}
+
+.btn {
+    border: #45a29e 2px solid;
+}
+
+
+.btn:hover, .btn:focus {
+    background: #66fcf1;
+}
