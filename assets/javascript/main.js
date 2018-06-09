@@ -25,7 +25,7 @@ function queryGif() {
     }
     additionalGif = false;
 
-    let queryURL = "http://api.giphy.com/v1/gifs/search?api_key=2vO0utIiJekaNYg9mRz0BBJiEnYdZmXJ&offset=" + offset + "&limit=" + limit + "&q=funny-" + animal;
+    let queryURL = "https://api.giphy.com/v1/gifs/search?api_key=2vO0utIiJekaNYg9mRz0BBJiEnYdZmXJ&offset=" + offset + "&limit=" + limit + "&q=funny-" + animal;
     $.ajax({
         url: queryURL,
         method: "Get"
