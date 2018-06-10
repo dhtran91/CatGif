@@ -1,11 +1,13 @@
 
 let topics = ["Dog", "Cat", "Bird", "Panda", "Monkey"];
 let $buttonArea = $('#animal-btn');
-let $gifView = $('#gif-view');
+
 let limit = 10;
 let offset = 0;
 let animal;
 let additionalGif = false;
+let favorites = [];
+let home = "";
 function populateButton() {
 
     $buttonArea.empty();
@@ -18,6 +20,7 @@ function populateButton() {
 }
 
 function queryGif() {
+    let $gifView = $('#gif-view');
     if (!additionalGif) {
         $gifView.empty();
         offset = 0;
@@ -43,7 +46,8 @@ function queryGif() {
                 });
                 let p = $('<p>').html("Title: " + response.data[i].title + "<br>Rating: " + response.data[i].rating);
                 // let a = $(`<a href=${response.data[i].images.original.mp4} download>Click Here to Download</a>`)
-                let animalDiv = $('<div>').addClass('col-md-3 col-sm-4 col-xs-12').css({ 'width': response.data[i].images.fixed_height.width, 'margin': '10px' }).append(animalImage, p);
+                let favoriteBtn = $('<button class="favorite">Favorite It!</button>')
+                let animalDiv = $('<div>').addClass('col-md-3 col-sm-4 col-xs-12').css({ 'width': response.data[i].images.fixed_height.width, 'margin': '10px' }).append(animalImage, p, favoriteBtn);
 
                 $gifView.append(animalDiv);
 
@@ -51,8 +55,10 @@ function queryGif() {
         })
 }
 
-populateButton();
 
+
+populateButton();
+$(document).on('click', '.animal', queryGif);
 $(document).on('click', '#search-animal', function (event) {
     event.preventDefault();
 
@@ -66,11 +72,24 @@ $(document).on('click', '#search-animal', function (event) {
     populateButton();
 })
 
-$(document).on('click', '.animal', queryGif);
+$(document).on('click','.favorite', function(event) {
+    // favorites.push($(this).parent("div").html());
+    favorites.push($(this).parent().get(0));
+    
+    
+})
+
+$(document).on('click','#clear', function(){
+    home = [];
+    $('#gif-view').empty();
+})
+
 $(document).on('click', '#additional-gif', function () {
+
     offset += 10;
     additionalGif = true;
     queryGif();
+    home = $('#gif-view').html();
 });
 
 $(document).on('click', '.gif', function () {
@@ -84,3 +103,31 @@ $(document).on('click', '.gif', function () {
         $(this).attr('data-state', 'still');
     }
 });
+
+$(document).on('click', '#favorites', function() {
+    let $gifView = $('#gif-view');
+    home = $gifView.html();
+    $gifView.empty();
+    if(favorites.length === 1) {
+        $gifView.html(favorites);
+    } else {
+        for(let i = 0; i < favorites.length;i ++) {
+            // $gifView.append($(`<div>${favorites[i]}</div>`) );
+            $gifView.append(favorites[i]);
+        }
+    }
+    
+    
+})
+
+$(document).on('click', '#home', function() {
+    if(home === "") {
+        return;
+    } else {
+        let $gifView = $('#gif-view');
+        $gifView.empty()
+        $gifView.html(home);
+    }
+
+    
+})
